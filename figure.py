@@ -36,4 +36,35 @@ class Circle:
                         
                         
 
+class Rectangle:
+    def __init__(self, min_x, max_x, min_y, max_y, hx, hy):
+        self.net = []
+        self.border = []
+        x = min_x
+        
+        while x <= max_x:
+            row = []
+            y = min_y
+            while y <= max_y:
+                row.append(Point(x, y))
+                y += hy
+            self.net.append(row)
+            x += hx
+
+        ps = {(round(p.x, 5), round(p.y, 5)) for row in self.net for p in row}
+
+        for row in self.net:
+            for p in row:
+                px = round(p.x, 5)
+                py = round(p.y, 5)
+                neighbors = [
+                    (round(px + hx, 5), py),
+                    (round(px - hx, 5), py),
+                    (px, round(py + hy, 5)),
+                    (px, round(py - hy, 5))
+                ]
+                for nx, ny in neighbors:
+                    if (nx, ny) not in ps:
+                        self.border.append(Point(nx, ny))
+                       
 

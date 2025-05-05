@@ -1,17 +1,19 @@
 import matplotlib.pyplot as plt
 from point import Point
 from figure import Circle
+from figure import Rectangle
 from grid import RectangleNet
 from solvers import MKE
 
 
-EPS = 5*10**-2
-MIN_X = -20
-MAX_X = 20
-MIN_Y = -10
-MAX_Y = 10
+EPS = 10**-1
+MIN_X = -4
+MAX_X = 6
+MIN_Y = -2.5    
+MAX_Y = 2.5
 LEFT_POTENTIAL = 200
 RIGHT_POTENTIAL = -200
+NUM_ITER = 1000
 
 
 def plot_net(React):
@@ -20,7 +22,7 @@ def plot_net(React):
     y_net = [p.y for row in React.net for p in row if p.active == True]
     potential = [p.psi for row in React.net for p in row if p.active == True]
 
-    plt.scatter(x_net, y_net, c=potential,  cmap="coolwarm" , s=1)
+    plt.scatter(x_net, y_net, c=potential,  cmap="magma" , s=10)
 
     
 
@@ -50,30 +52,44 @@ if __name__ == '__main__':
     my_net = RectangleNet(MIN_X, MAX_X, MIN_Y, MAX_Y, EPS, EPS)
 
     fig1 = Circle(Point(0, 0), 1, EPS, EPS)
-    fig2 = Circle(Point(2, 0), 2, EPS, EPS)
+    fig2 = Rectangle(3, 4, -0.7, 0.7, EPS, EPS)
 
 
     my_net.add_figure(fig1)
     my_net.add_figure(fig2)
 
-    def left(x, y):
-        return LEFT_POTENTIAL
+    # def left(x, y):
+    #     if y > 0:
+    #         return LEFT_POTENTIAL*(MAX_Y-y)
+    #     else:
+    #         return  -LEFT_POTENTIAL*(MIN_Y-y)
 
-    def right(x, y):
+
+    # def right(x, y):
+    #     if y > 0:
+    #         return RIGHT_POTENTIAL*(MAX_Y-y)
+    #     else:
+    #         return  -RIGHT_POTENTIAL*(MIN_Y-y)
+
+
+    def top(x, y):
+        return LEFT_POTENTIAL
+    
+    def lower(x, y):
         return RIGHT_POTENTIAL
     
     def nulldudn(pot):
         return pot
+    
+    
+
+    def func(x, y):
+        return 0
         
 
-    sim = MKE(my_net, left, right, None, None, nulldudn)
-    A_matrix = sim.solver2D()
+    sim = MKE(my_net, func, None, None, top, lower, nulldudn)
+    sim.solver2D(NUM_ITER)
 
-    # x = [i for i in range(len(A_matrix)) for j in range(len(A_matrix[i]))]
-    # y = [j for row in A_matrix for j in range(len(row))]
-
-    # plt.scatter(x, y)
-    # plt.show()
 
     # value = [A_matrix[i][j] for i in x for ]
 
